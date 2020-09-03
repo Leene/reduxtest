@@ -1,5 +1,8 @@
+> GitBash
+>> $ cd E:/+++Projekte/+++Programmieren2020/reduxtest
+
 ## 1. Redux
-Redux ist eien Javascript Biblliothek füre eine übesichtlicheres Mangament von Zusatandswerten (States) in React-Anwendungen
+Redux ist eine Javascript Bibliothek füre eine übesichtlicheres Mangament von Zusatandswerten (States) in React-Anwendungen
 
 ## 2. Bestandteile von Redux
 
