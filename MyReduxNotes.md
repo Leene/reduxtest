@@ -360,17 +360,206 @@ oder:
 
 
 ### 2.2.2 Reducer erstellen
-1. neue Datei "reducer.js" im Ordner "src" erstellen
+ _Datei "reducer.js" im Ordner "src" mit folgendem Inhalt erstellen:_
 
 
 ```javascript
+function reducer (state =[], action) { // =[] leeres Array dient als initial State damit der store anfangs nicht undefiend ist 
+    if (action.type === 'bugAdded')
+    return [
+        ...state,
+        {
+            id: ++lastId,
+            description: action.payload.description,
+            resolved:false 
+        }
+    ];
+
+else if (action.type === 'bugRemoved')
+    return state.filter(bug => bug.id !==action.playload.id) // alle bugs außer der mit gegebener Id 
+
+    return state // aktueller State falls filtern nicht klappt, ohne diese Zeile würde app bei filterproblem haken
+
+}
 ```
 
 
+Dasselbe nochmal mit **switch-case Implementierung** statt **if**: 
+```javascript
+function reducer (state =[], action) {
+
+  switch (action.type) {
+    case "bugAdded": 
+      return [
+        ...state,
+        {
+            id: ++lastId,
+            description: action.payload.description,
+            resolved:false 
+        }
+    ];
+    case "bugRemoved":
+          return state.filter(bug => bug.id !==action.payload.id) 
+    default: return state
+  }
+}
+```
+### 2.2.3. Store ...
+
+#### 2.2.3.1 ... erstellen
+ _Datei "store.js" im Ordner "src" mit folgendem Inhalt erstellen:_
+```javascript
+import { create Store } from 'redux'
+import reducer from './reducer' // reducer.js wird mit "export DEFAULT" exportiert, dahier ist hier beim importieren keine geschweifte Klammerung nötig
+
+const store = createStore(reducer) // ist ne Higher Order Function
+
+export default store // Export wichtig um es in Hauptapplikation verwenden zu können
+
+```
+#### 2.2.3.2 ... benutzen
+_Datei "index.js"_
+```javascript
+
+import store from './store' // keine geschwungenen Klammern da "export default"
+
+//const unsubscribe = // unsubscribe() ///->einblenden um unsubscribing zu simulieren
+
+  store.subscribe(() => {
+    console.log ("Store changed!", store.getState());
+    
+    })
+
+store.dispatch({
+  type: "bugAdded",
+  payload: {
+    description: "Bug1"
+  }
+})
+
+// unsubscribe() ///->einblenden um unsubscribing zu simulieren, führt dazu da zweite Änderung im Store nicht mehr ausgefürt wird. Unsubscriben von Componenten ist wichtig wenn diese in der UI nicht mehr sichtbar sind
+
+store.dispatch({
+  type: "bugRemoved",
+  payload: {
+    id: 1
+  }
+})
+
+console.log(store.getState()) // Ausgabe von aktuellen Statewerten des Stores
+```
+
+## 2.3 Action Types
+Wiederholung Redux-Ablauf
+> wenn  Action ausgelöst wird ruft der store einen reducer auf und übergibt ihn den aktuellen State und die auslösende Aktion.
+
+> Abhängig vom Aktiobnstypen bekommt man einen neuen State.
+
+Bisher haben wir die Bezeichnungen der Actiontypes hart gecodet, daher ist es schlecht wartbar. Man kann das ausbessern, indem man die ActionTypes auslagert.
+
+### 2.3 Action Types auslagern
+1. _Datei "actionTypes.js" im Ordner "src" mit folgendem Inhalt erstellen:_
 
 ```javascript
+export const BUG_ADDED = "bugAdded"
+export const BUG_REMOVED = "bugRemoved"
 ```
+2. _in reducer.js Importbefehl der ActionTypes angeben_
 ```javascript
+import { BUG_ADDED, BUG_REMOVE } from './actionTypes'
+function reducer (state =[], action) {
+
+  switch (action.type) {
+    case BUG_ADDED: 
+      return [
+        ...state,
+        {
+            id: ++lastId,
+            description: action.payload.description,
+            resolved:false 
+        }
+    ];
+    case BUG_REMOVED:
+          return state.filter(bug => bug.id !==action.payload.id) 
+    default: return state
+  }
+}
+
+///////////////////////////////////////////////////
+//oder bei sehr vielen ActionTypes:
+
+
+>> import * as actions from './actionTypes'
+
+function reducer (state =[], action) {
+
+  switch (action.type) {
+>>  case actions.BUG_ADDED:
+      return [
+        ...state,
+        {
+            id: ++lastId,
+            description: action.payload.description,
+            resolved:false 
+        }
+    ];
+>>    case actions.BUG_REMOVED:
+          return state.filter(bug => bug.id !==action.payload.id) 
+    default: return state
+  }
+}
 ```
+
+3. _in Datei "index.js" Importbefehl der ActionTypes angeben_
+
 ```javascript
+import store from './store' 
+import * as actions from './actionTypes'
+
+
+store.dispatch({
+  type: actions.BUG_ADDED,
+  payload: {
+    description: "Bug1"
+  }
+})
+
+store.dispatch({
+  type: actions.BUG_REMOVED,
+  payload: {
+    id: 1
+  }
+})
+
+console.log(store.getState()) 
+
 ```
+
+### 2.4 Action Creators
+> Ein weiteres Problem in der App ist es WIE wir eine Aktion ausliefern (how we dispatch an action)
+Bisher könnte es passieren dass man ähnliche Aktionen an mehrern Stellen im Code erstellt. Es ist aber besser eine Aktion an mehreren Stellen nutzen zu können. Das erreicht man mit "Action Creators"
+
+1. _Datei "actions.js" im Ordner "src" mit folgendem Inhalt erstellen:_
+```javascript
+export function bugAdded(description) {
+    return {
+        type: actions.BUG_ADDED,
+        payload: {
+            description: "Bug1"
+        }
+    }
+}
+```
+2.  _in Datei "index.js" Importbefehl der ActionTypes entfernen bzw. auschneiden und 
+```javascript
+import * as actions from './actionTypes'
+
+```
+... in index.js. folgendes einfügen: 
+```javascript
+import  { bugAdded } from './actions'
+
+store.dispatch(bugAdded("Bug 1")) // Aktion bugAdded() kann jetzt ganz einfach mit Seiter Description als Parameter aufgerufen werden
+ 
+```
+

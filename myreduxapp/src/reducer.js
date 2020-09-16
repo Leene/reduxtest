@@ -1,8 +1,11 @@
+import { BUG_ADDED, BUG_REMOVED } from './actionTypes'
+//oder bei sehr vielen ActionTypes:
+// import * as actions from './actionTypes'
 
 let lastId = 0
 
-function reducer (state =[], action) { // =[] leeres Array dient als initial State damit der store anfangs nicht undefiend ist 
-    if (action.type === 'bugAdded')
+export default function reducer (state =[], action) { // =[] leeres Array dient als initial State damit der store anfangs nicht undefiend ist 
+    if (action.type === BUG_ADDED)
     return [
         ...state,
         {
@@ -12,8 +15,8 @@ function reducer (state =[], action) { // =[] leeres Array dient als initial Sta
         }
     ];
 
-else if (action.type === 'bugRemoved')
-    return state.filter(bug => bug.id !==action.playload.id) // alle bug außer der mit gegebener Id 
+else if (action.type === BUG_REMOVED)
+    return state.filter(bug => bug.id !==action.payload.id) // alle bug außer der mit gegebener Id 
 
     return state // aktueller State falls filtern nicht klappt, ohne diese Zeile würde app bei filterproblem haken
 
