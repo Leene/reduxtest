@@ -590,18 +590,9 @@ export const bugResolved = id => ({
 3. in reducer.js neuen case im Switch-Case-Schleife/ If-Else-Schleife anpassen hinzfügen:
 
 ```javascript
-
-```
-
-```javascript
-
-```
-
-```javascript
-
-```
-
-
-```javascript
-
+...
+else if (action.type === BUG_RESOLVED)
+    return state.map(bug => 
+        bug.id !==action.payload.id ? bug : {...bug, resolved: true}) // alle bug außer der mit gegebener Id 
+...
 ```
