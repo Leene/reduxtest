@@ -11,7 +11,7 @@ export default function App() {
     <Main>
       <h1>Redux in React</h1>
  <div>{Graphic()}</div>
-
+ 
     </Main>
   );
 }

@@ -4,18 +4,23 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { bugAdded } from './actions'
+import { bugAdded, bugResolved } from './actions'
 
 import store from './store' // keine geschwungenen Klammern da "export default"
 //import * as actions from './actionTypes'
 
 //const unsubscribe = // unsubscribe() ///->einblenden um unsubscribing zu simulieren
 
+store.dispatch(bugAdded("Bug 1"))
+store.dispatch(bugResolved(1))
+
+
   store.subscribe(() => {
     console.log ("Store changed!", store.getState());
     
     })
-    store.dispatch(bugAdded("Bug 1"))
+
+  
      
     //////////
  /*   store.dispatch({
@@ -27,13 +32,15 @@ import store from './store' // keine geschwungenen Klammern da "export default"
     
     // unsubscribe() ///->einblenden um unsubscribing zu simulieren, führt dazu da zweite Anderung im Store nicht mehr ausgefürt wir. Unsubscriben von Componenten ist wichtig wenn diese in der UI nicht merh sichtbar sind
 
-    store.dispatch({
+   
+
+   /* store.dispatch({
       type: actions.BUG_REMOVED,
       payload: {
         id: 1
       }
     })
-
+*/
 
 console.log(store.getState()) // Ausgabe von aktuellen Statewerten des Stores
 

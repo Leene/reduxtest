@@ -466,7 +466,7 @@ export const BUG_REMOVED = "bugRemoved"
 ```
 2. _in reducer.js Importbefehl der ActionTypes angeben_
 ```javascript
-import { BUG_ADDED, BUG_REMOVE } from './actionTypes'
+>> import { BUG_ADDED, BUG_REMOVED } from './actionTypes'
 function reducer (state =[], action) {
 
   switch (action.type) {
@@ -514,24 +514,9 @@ function reducer (state =[], action) {
 
 ```javascript
 import store from './store' 
-import * as actions from './actionTypes'
+>> import * as actions from './actionTypes'
 
-
-store.dispatch({
-  type: actions.BUG_ADDED,
-  payload: {
-    description: "Bug1"
-  }
-})
-
-store.dispatch({
-  type: actions.BUG_REMOVED,
-  payload: {
-    id: 1
-  }
-})
-
-console.log(store.getState()) 
+...
 
 ```
 
@@ -540,16 +525,38 @@ console.log(store.getState())
 Bisher könnte es passieren dass man ähnliche Aktionen an mehrern Stellen im Code erstellt. Es ist aber besser eine Aktion an mehreren Stellen nutzen zu können. Das erreicht man mit "Action Creators"
 
 1. _Datei "actions.js" im Ordner "src" mit folgendem Inhalt erstellen:_
+
+> Es gibt 2 Varianten den Action creator zu sachreiben.
+
+**Variante 1:**
 ```javascript
+import * as actions from './actionTypes'
+
 export function bugAdded(description) {
     return {
         type: actions.BUG_ADDED,
         payload: {
-            description: "Bug1"
+             description // Kurzschreibweise für 'description: description'
         }
     }
 }
+``` 
+
+**Variante 2:**
+
+```javascript
+import * as actions from './actionTypes'
+
+export const bugAdded = description => ({
+    
+        type: actions.BUG_ADDED,
+        payload: {
+            description // Kurzschreibweise für 'description: description'
+
+        }
+})
 ```
+
 2.  _in Datei "index.js" Importbefehl der ActionTypes entfernen bzw. auschneiden und 
 ```javascript
 import * as actions from './actionTypes'
@@ -562,4 +569,39 @@ import  { bugAdded } from './actions'
 store.dispatch(bugAdded("Bug 1")) // Aktion bugAdded() kann jetzt ganz einfach mit Seiter Description als Parameter aufgerufen werden
  
 ```
+## 3. Ablauf Wenn man neuen Button hinzufügt:
+1. in actionTypes.js neue Aktion hinzufügen zB. für einen Resolved-Button:
+```javascript
+    export const BUG_ADDED = "bugAdded"
+    export const BUG_REMOVED = "bugRemoved"
+>>  export const BUG_RESOLVED = "bugResolved"
+```
+2. in actions.js neue Aktion hinzufügen
+```javascript
+...
+export const bugResolved = id => ({
+    type: actions.BUG_RESOLVED,
+    payload : {
+        id  // Kurzschreibweise für 'id: id'
+    }
+})
+...
+```
+3. in reducer.js neuen case im Switch-Case-Schleife/ If-Else-Schleife anpassen hinzfügen:
 
+```javascript
+
+```
+
+```javascript
+
+```
+
+```javascript
+
+```
+
+
+```javascript
+
+```
